@@ -32,6 +32,7 @@ public:
 	TNode *removeOneKid(TNode *tmp, bool leftFlag);
 	TNode *remove(string s);
 	void setHeight(TNode *n);
+    void setHeightForRemove(TNode *n);
 };
 
 

@@ -110,13 +110,17 @@ bool BST::insert(string s){
 }
 
 int BST::maxOfHeights(TNode *m, TNode *n){
-    if (m==NULL){
+    if (m==NULL&&n==NULL){
+        //cout<<"no children"<<endl;
+        return 0;
+    }
+    else if (m==NULL){
         return n->height;
     }
-    if (n==NULL){
+    else if (n==NULL){
         return m->height;
     }
-    if (m->height > n->height){
+    else if (m->height > n->height){
         return m->height;
     }
     else{
@@ -126,18 +130,44 @@ int BST::maxOfHeights(TNode *m, TNode *n){
 
 void BST::setHeight(TNode *n){
     if (n->parent!=NULL){
-        if (n->parent->height==maxOfHeights(n->parent->left,n->parent->right)+1||n->parent==NULL){
+        if (n->parent->height==maxOfHeights(n->parent->left,n->parent->right)+1){
             return;
         }
         else{
             //cout << "else part"<<endl;
-            n->parent->height += 1;
+            n->parent->height=maxOfHeights(n->parent->left,n->parent->right)+1;
             setHeight(n->parent);
         }
     }
 }
 
+void BST::setHeightForRemove(TNode *n){
+    if (n!=NULL){
+        if (n->height==maxOfHeights(n->left, n->right)+1){
+            return;
+        }
+        else{
+            n->height=maxOfHeights(n->left, n->right)+1;
+            setHeightForRemove(n->parent);
+        }
+    }
+}
+
+
 TNode* BST::find(string s){
+    TNode *temp = root;
+    while (temp!=NULL){
+        if (temp->data->phrase==s){
+            return temp;
+        }
+        else if (s>temp->data->phrase){
+            temp = temp->right;
+        }
+        else if (s<temp->data->phrase){
+            temp = temp->left;
+        }
+    }
+    return NULL;
 }
 
 void BST::printTreeIO(TNode *n){
@@ -177,14 +207,78 @@ void BST::printTreePost(TNode *n){
 }
 
 TNode* BST::remove(string s){
-
+    TNode *tmp = find(s);
+    TNode *tempRoot = find(s);
+    TNode *tmpParent = NULL;
+    if (tmp->left==NULL&&tmp->right==NULL){
+        tmpParent=tmp->parent;
+        removeNoKids(tmp);
+        setHeightForRemove(tmpParent);
+    }
+    else if (tmp->left==NULL&&tmp->right!=NULL){
+        tmpParent=tmp->parent;
+        removeOneKid(tmp,false);
+        setHeightForRemove(tmpParent);
+    }
+    else if (tmp->left!=NULL&&tmp->right==NULL){
+        tmpParent=tmp->parent;
+        removeOneKid(tmp,true);
+        setHeightForRemove(tmpParent);
+    }
+    else if (tmp->left!=NULL&&tmp->right!=NULL){
+        tmp=tmp->left;
+        while (tmp->right!=NULL){
+            tmp=tmp->right;
+        }
+        tempRoot->data->phrase=tmp->data->phrase;
+        if (tmp->left==NULL){
+            tmpParent=tmp->parent;
+            removeNoKids(tmp);
+            setHeightForRemove(tmpParent);
+        }
+        else if (tmp->left!=NULL){
+            tmpParent=tmp->parent;
+            removeOneKid(tmp,true);
+            setHeightForRemove(tmpParent);
+        }
+    }
 }
 
-TNode* BST::removeNoKids(TNode *tmp){
 
+
+TNode* BST::removeNoKids(TNode *tmp){
+    TNode *removedNode = tmp;
+    if (tmp==tmp->parent->left){
+        tmp->parent->left = NULL;
+    }
+    else if (tmp==tmp->parent->right){
+        tmp->parent->right = NULL;
+    }
+    delete tmp;
+    return removedNode;
 }
 
 TNode* BST::removeOneKid(TNode *tmp, bool leftFlag){
-
+    TNode *removedNode = tmp;
+    if (leftFlag==true){
+        tmp->left->parent=tmp->parent;
+        if (tmp==tmp->parent->right){
+            tmp->parent->right=tmp->left;
+        }
+        else if (tmp==tmp->parent->left){
+            tmp->parent->left=tmp->left;
+        }
+    }
+    else if (leftFlag==false){
+        tmp->right->parent=tmp->parent;
+        if (tmp==tmp->parent->left){
+            tmp->parent->left=tmp->right;
+        }
+        else if (tmp==tmp->parent->right){
+            tmp->parent->right=tmp->right;
+        }
+    }
+    delete tmp;
+    return removedNode;
 }
 
