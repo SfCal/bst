@@ -16,6 +16,7 @@ TNode::TNode(string s) {
 	right = NULL;
 	parent = NULL;
 	height = 1;
+	balance = 0;
 	data = new Phrase(s);
 }
 TNode::TNode() {
@@ -23,6 +24,7 @@ TNode::TNode() {
 	right = NULL;
 	parent = NULL;
 	height = 1;
+	balance = 0;
 	data = new Phrase();
 }
 TNode::~TNode(){

@@ -19,6 +19,7 @@ class TNode{
 	TNode *parent;
 	Phrase *data;
 	int height;
+	int balance;
 public:
 	TNode(string s);
 	TNode();

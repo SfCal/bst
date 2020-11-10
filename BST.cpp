@@ -85,6 +85,7 @@ bool BST::insert(string s){
                     temp->left = new TNode(s);
                     temp->left->parent = temp;
                     setHeight(temp->left);
+                    setBalance(temp->left);
                     return true;
                 }
                 else{
@@ -96,6 +97,7 @@ bool BST::insert(string s){
                     temp->right = new TNode(s);
                     temp->right->parent = temp;
                     setHeight(temp->right);
+                    setBalance(temp->right);
                     return true;
                 }
                 else{
@@ -106,6 +108,24 @@ bool BST::insert(string s){
                 return false;
             }
         }
+    }
+}
+
+void BST::setBalance(TNode *n){
+    if (n->parent!=NULL){
+        if(n->left==NULL && n->right!=NULL) {
+            n->balance= 0 - n->right->height;
+        }
+        else if(n->left!=NULL && n->right==NULL) {
+            n->balance= n->left->height - 0;
+        }
+        else if(n->left!=NULL && n->right!=NULL){
+            n->balance = n->left->height - n->right->height;
+        }
+        else {
+            n->balance = 0;
+        }
+        setBalance(n->parent);
     }
 }
 
@@ -176,7 +196,7 @@ void BST::printTreeIO(TNode *n){
     }
     else{
         printTreeIO(n->left);
-        cout << n->data->phrase<<","<<n->height;
+        cout << n->data->phrase<<","<<n->height<<","<<n->balance;
         cout << endl;
         printTreeIO(n->right);
     }
@@ -187,7 +207,7 @@ void BST::printTreePre(TNode *n){
         return;
     }
     else{
-        cout << n->data->phrase<<","<<n->height;
+        cout << n->data->phrase<<","<<n->height<<","<<n->balance;
         cout << endl;
         printTreePre(n->left);
         printTreePre(n->right);
@@ -201,7 +221,7 @@ void BST::printTreePost(TNode *n){
     else{
         printTreePost(n->left);
         printTreePost(n->right);
-        cout << n->data->phrase<<","<<n->height;
+        cout << n->data->phrase<<","<<n->height<<","<<n->balance;
         cout << endl;
     }
 }
